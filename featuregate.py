@@ -26,10 +26,10 @@ class FeatureGate(nn.Module):
         B, L, D = x.shape
         x_pooled = x.mean(1)
 
-        list = list(features.values())
+        flist = list(features.values())
         g_scores = []
         
-        for idx, (g_fn, feat) in enumerate(zip(n.gates, list)):
+        for idx, (g_fn, feat) in enumerate(zip(n.gates, flist)):
             if feat is None:
                 g_scores.append(torch.zeros(B, 1, device=device))
             else:
@@ -56,7 +56,7 @@ class FeatureGate(nn.Module):
         final = routing_w * gates
         final = final / (final.sum(-1, keepdim=True) + 1e-8)
 
-        stacked = torch.stack([f for f in list if f is not None], dim=1)
+        stacked = torch.stack([f for f in flist if f is not None], dim=1)
 
         weighted = torch.einsum('bf,bfkd->bkd', final, stacked)
         return weighted
